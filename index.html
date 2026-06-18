@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Chi Code | Free Chi University</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --gold-pale: #FDF6E3;
+    --dark: #0D0D1A;
+    --dark2: #1A1A2E;
+    --dark3: #252540;
+    --cream: #F5EDD8;
+    --muted: #B0B0C8;
+    --blue: #4A90D9;
+    --blue-bright: #6AABF7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(201,168,76,0.06) 0%, transparent 60%);
+    pointer-events:none; z-index:0;
+  }
+  .container { max-width:760px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+  header { text-align:center; padding:60px 24px 40px; position:relative; z-index:1; }
+  .brand-tag { font-family:'Space Mono', monospace; font-size:11px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:18px; display:block; }
+  header h1 { font-family:'Playfair Display', serif; font-size:clamp(52px, 10vw, 88px); font-weight:900; line-height:0.92; color:var(--blue-bright); margin-bottom:8px; }
+  header h1 em { color:var(--gold); font-style:italic; }
+  .header-sub { font-size:16px; color:var(--blue-bright); font-weight:500; max-width:460px; margin:18px auto 0; line-height:1.7; }
+  .gold-rule { width:56px; height:3px; background:linear-gradient(90deg, var(--gold), var(--gold-light)); margin:24px auto; border-radius:2px; }
+
+  .progress-wrap { max-width:760px; margin:0 auto 40px; padding:0 24px; position:relative; z-index:1; }
+  .progress-header { display:flex; justify-content:space-between; margin-bottom:10px; }
+  .progress-label { font-family:'Space Mono', monospace; font-size:11px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; }
+  .progress-count { font-family:'Space Mono', monospace; font-size:11px; color:var(--muted); }
+  .progress-bg { height:2px; background:rgba(201,168,76,0.15); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold-light)); border-radius:2px; transition:width 0.5s cubic-bezier(.4,0,.2,1); width:0%; }
+
+  .step-card { background:rgba(255,255,255,0.03); border:1px solid rgba(201,168,76,0.18); border-radius:16px; padding:44px 48px; margin-bottom:24px; display:none; animation:fadeUp 0.4s ease forwards; position:relative; z-index:1; }
+  .step-card.active { display:block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+  .step-eyebrow { font-family:'Space Mono', monospace; font-size:10px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:14px; display:block; }
+  .step-title { font-family:'Playfair Display', serif; font-size:32px; font-weight:900; color:var(--blue-bright); margin-bottom:10px; line-height:1.2; }
+  .step-desc { font-size:15px; color:var(--blue-bright); margin-bottom:30px; line-height:1.8; font-weight:500; }
+
+  .field-group { margin-bottom:20px; }
+  label { display:block; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+  input[type=text], textarea {
+    width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(201,168,76,0.25); border-radius:10px;
+    padding:14px 18px; font-family:'DM Sans', sans-serif; font-size:14px; color:var(--cream); outline:none;
+    transition:border-color 0.2s, background 0.2s; resize:vertical;
+  }
+  input[type=text]::placeholder, textarea::placeholder { color:var(--muted); }
+  input[type=text]:focus, textarea:focus { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+
+  .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:4px; }
+  .chip { padding:10px 22px; border-radius:50px; border:1px solid rgba(106,171,247,0.5); background:rgba(74,144,217,0.1); color:var(--blue-bright); font-family:'DM Sans', sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; user-select:none; white-space:normal; text-align:center; line-height:1.4; }
+  .chip:hover { border-color:var(--blue-bright); background:rgba(74,144,217,0.2); color:#FFFFFF; }
+  .chip.selected { background:var(--gold); border-color:var(--gold); color:var(--dark); font-weight:700; }
+
+  .tone-grid { display:flex; flex-wrap:wrap; gap:10px; }
+  .tone-chip { padding:12px 20px; border-radius:10px; border:1px solid rgba(106,171,247,0.5); background:rgba(74,144,217,0.1); color:var(--blue-bright); font-family:'DM Sans', sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.2s; text-align:center; user-select:none; line-height:1.4; white-space:nowrap; }
+  .tone-chip:hover { border-color:var(--blue-bright); background:rgba(74,144,217,0.2); color:#FFFFFF; }
+  .tone-chip.selected { background:var(--gold); border-color:var(--gold); color:var(--dark); font-weight:700; }
+
+  .btn-row { display:flex; justify-content:space-between; align-items:center; margin-top:32px; gap:12px; }
+  .btn-back { font-family:'DM Sans', sans-serif; font-size:13px; font-weight:500; color:var(--muted); background:transparent; border:none; cursor:pointer; padding:12px 0; transition:color 0.2s; }
+  .btn-back:hover { color:var(--cream); }
+  .btn-next { font-family:'DM Sans', sans-serif; font-size:14px; font-weight:600; background:linear-gradient(135deg, var(--gold), var(--gold-light)); color:var(--dark); border:none; border-radius:50px; padding:14px 36px; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; }
+  .btn-next:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.3); }
+
+  #result-section { display:none; position:relative; z-index:1; }
+  .result-header { text-align:center; padding:20px 0 40px; }
+  .result-header h2 { font-family:'Playfair Display', serif; font-size:36px; font-weight:900; color:var(--blue-bright); margin-bottom:8px; }
+  .result-header p { font-size:14px; color:var(--muted); font-weight:300; }
+
+  .chi-doc { background:rgba(255,255,255,0.04); border:1px solid rgba(201,168,76,0.25); border-radius:16px; padding:40px 44px; margin-bottom:20px; }
+  .chi-doc-title { font-family:'Playfair Display', serif; font-size:22px; font-weight:700; color:var(--gold); margin-bottom:4px; }
+  .chi-doc-sub { font-size:11px; color:var(--muted); font-family:'Space Mono', monospace; letter-spacing:2px; text-transform:uppercase; margin-bottom:28px; }
+  .chi-section { margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid rgba(201,168,76,0.1); }
+  .chi-section:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .chi-section-label { font-family:'Space Mono', monospace; font-size:10px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:8px; }
+  .chi-section-value { font-size:14px; color:var(--cream); line-height:1.8; font-weight:300; }
+
+  .copy-block-wrap { position:relative; margin-bottom:20px; }
+  .copy-block { background:var(--dark2); border:1px solid rgba(201,168,76,0.2); border-radius:12px; padding:28px 32px; font-family:'Space Mono', monospace; font-size:11.5px; color:var(--cream); line-height:1.9; white-space:pre-wrap; word-break:break-word; }
+  .copy-btn { position:absolute; top:14px; right:14px; font-family:'DM Sans', sans-serif; font-size:12px; font-weight:600; background:var(--gold); color:var(--dark); border:none; border-radius:6px; padding:7px 16px; cursor:pointer; transition:opacity 0.2s; }
+  .copy-btn:hover { opacity:0.85; }
+
+  .action-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px; }
+  .btn-outline { font-family:'DM Sans', sans-serif; font-size:13px; font-weight:600; background:transparent; border:1px solid rgba(201,168,76,0.4); color:var(--gold); border-radius:50px; padding:12px 28px; cursor:pointer; transition:all 0.2s; }
+  .btn-outline:hover { background:rgba(201,168,76,0.1); border-color:var(--gold); }
+  .btn-primary { font-family:'DM Sans', sans-serif; font-size:13px; font-weight:600; background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:var(--dark); border:none; border-radius:50px; padding:12px 28px; cursor:pointer; transition:all 0.2s; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.3); }
+
+  .fcu-footer { text-align:center; padding:48px 24px 60px; position:relative; z-index:1; }
+  .fcu-footer p { font-size:12px; color:var(--muted); font-weight:300; }
+  .fcu-footer strong { color:var(--gold); font-weight:600; }
+
+  @media(max-width:600px) {
+    .step-card { padding:28px 20px; }
+    .chi-doc { padding:24px 20px; }
+    .copy-block { padding:20px 16px; font-size:11px; }
+    .tone-grid { grid-template-columns:repeat(2,1fr); }
+  }
+
+  @media print {
+    body { background:#fff; color:#111; }
+    body::before { display:none; }
+    .step-card, header, .progress-wrap, .action-row, .copy-btn, .fcu-footer, #result-section .result-header p { display:none !important; }
+    #result-section { display:block !important; }
+    .chi-doc { background:#fff; border:1px solid #ccc; color:#111; }
+    .chi-doc-title, .chi-section-label { color:#9a7a20; }
+    .chi-section-value { color:#222; }
+    .copy-block { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="brand-tag">Free Chi University</span>
+  <h1>The <em>Chi</em><br>Code</h1>
+  <div class="gold-rule"></div>
+  <p class="header-sub">Answer 8 questions. Walk away with your personal AI primer — ready to paste into any AI tool so it instantly knows who you are.</p>
+</header>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-header">
+    <span class="progress-label">Building Your Code</span>
+    <span class="progress-count" id="progressCount">Step 1 of 8</span>
+  </div>
+  <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1 -->
+  <div class="step-card active" id="step-1">
+    <span class="step-eyebrow">Section 01 — Identity</span>
+    <h2 class="step-title">Who are you?</h2>
+    <p class="step-desc">This is how AI will greet you every session. Be full. Be specific. Your whole creative self — not a résumé.</p>
+    <div class="field-group">
+      <label>Your name or artist name</label>
+      <input type="text" id="f-name" placeholder="e.g. Queen of Chi / Madarocka Chi"/>
+    </div>
+    <div class="field-group">
+      <label>Your roles — be generous</label>
+      <input type="text" id="f-role" placeholder="e.g. Hip hop artist, DJ, author, educator, AI consultant"/>
+    </div>
+    <div class="field-group">
+      <label>Your cultural identity & background</label>
+      <input type="text" id="f-culture" placeholder="e.g. Nigerian American, hip hop pioneer since the 90s, culture queen"/>
+    </div>
+    <div class="field-group">
+      <label>Your brand name (if different from your name)</label>
+      <input type="text" id="f-brand" placeholder="e.g. Free Chi University"/>
+    </div>
+    <div class="field-group">
+      <label>The transformation you create for people</label>
+      <input type="text" id="f-transform" placeholder="e.g. I help creatives build legacies using AI as their tool"/>
+    </div>
+    <div class="btn-row">
+      <span></span>
+      <button class="btn-next" onclick="nextStep(1)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-card" id="step-2">
+    <span class="step-eyebrow">Section 02 — Voice & Tone</span>
+    <h2 class="step-title">How do you sound?</h2>
+    <p class="step-desc">Select up to 5 words that capture your brand energy. AI uses these to match your vibe in everything it writes for you.</p>
+    <div class="field-group">
+      <label>Your tone words (pick up to 5)</label>
+      <div class="tone-grid" id="tone-grid">
+        <div class="tone-chip" onclick="toggleTone(this)">Regal</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Conscious</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Bold</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Spiritual</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Raw & Real</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Educational</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Empowering</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Poetic</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Warm</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Direct</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Visionary</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Cultural</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Playful</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Authoritative</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Inspirational</div>
+        <div class="tone-chip" onclick="toggleTone(this)">Grounded</div>
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:20px">
+      <label>What should AI NEVER sound like for your brand</label>
+      <input type="text" id="f-antitone" placeholder="e.g. Corporate, robotic, preachy, too casual, aggressive"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(2)">← Back</button>
+      <button class="btn-next" onclick="nextStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-card" id="step-3">
+    <span class="step-eyebrow">Section 03 — Your People</span>
+    <h2 class="step-title">Who are you talking to?</h2>
+    <p class="step-desc">The more clearly AI knows your audience, the more your content will feel written directly for them — not for everyone.</p>
+    <div class="field-group">
+      <label>Describe your ideal audience</label>
+      <textarea id="f-audience" rows="3" placeholder="e.g. Young ethnic creatives aged 18–35 who want to build a career in music, media, or entrepreneurship without losing their cultural identity"></textarea>
+    </div>
+    <div class="field-group">
+      <label>What are they struggling with?</label>
+      <input type="text" id="f-painpoints" placeholder="e.g. Not knowing how to use AI, feeling overlooked, building a brand on a budget"/>
+    </div>
+    <div class="field-group">
+      <label>What do they dream of achieving?</label>
+      <input type="text" id="f-dreams" placeholder="e.g. Financial freedom, cultural impact, being seen as a leader in their space"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(3)">← Back</button>
+      <button class="btn-next" onclick="nextStep(3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-card" id="step-4">
+    <span class="step-eyebrow">Section 04 — What You Offer</span>
+    <h2 class="step-title">What do you create & sell?</h2>
+    <p class="step-desc">Give AI your offers so every caption, email, and post it writes actually leads people somewhere real.</p>
+    <div class="field-group">
+      <label>Your products or services</label>
+      <textarea id="f-offers" rows="3" placeholder="e.g. AI consulting for creatives, The Chi Code quiz, ebooks, mini courses, DJ bookings, speaking engagements"></textarea>
+    </div>
+    <div class="field-group">
+      <label>Your price range</label>
+      <div class="chips" id="price-chips">
+        <div class="chip" onclick="toggleChip(this)">Free lead magnets</div>
+        <div class="chip" onclick="toggleChip(this)">Low ticket ($11–$47)</div>
+        <div class="chip" onclick="toggleChip(this)">Mid ticket ($97–$297)</div>
+        <div class="chip" onclick="toggleChip(this)">Premium ($500+)</div>
+        <div class="chip" onclick="toggleChip(this)">Custom / consulting</div>
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:20px">
+      <label>How do people find you?</label>
+      <input type="text" id="f-discovery" placeholder="e.g. Instagram, TikTok, referrals, live events, podcast"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(4)">← Back</button>
+      <button class="btn-next" onclick="nextStep(4)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step-card" id="step-5">
+    <span class="step-eyebrow">Section 05 — Your Platforms</span>
+    <h2 class="step-title">Where do you show up?</h2>
+    <p class="step-desc">AI creates differently for each platform. Tell it where your content lives so it gets the format and energy right.</p>
+    <div class="field-group">
+      <label>Your active platforms</label>
+      <div class="chips" id="platform-chips">
+        <div class="chip" onclick="toggleChip(this)">Instagram</div>
+        <div class="chip" onclick="toggleChip(this)">TikTok</div>
+        <div class="chip" onclick="toggleChip(this)">YouTube</div>
+        <div class="chip" onclick="toggleChip(this)">Facebook</div>
+        <div class="chip" onclick="toggleChip(this)">LinkedIn</div>
+        <div class="chip" onclick="toggleChip(this)">X / Twitter</div>
+        <div class="chip" onclick="toggleChip(this)">Podcast</div>
+        <div class="chip" onclick="toggleChip(this)">Email list</div>
+        <div class="chip" onclick="toggleChip(this)">Website / Blog</div>
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:20px">
+      <label>How often do you create content?</label>
+      <div class="chips" id="freq-chips">
+        <div class="chip" onclick="toggleChip(this)">Daily</div>
+        <div class="chip" onclick="toggleChip(this)">A few times a week</div>
+        <div class="chip" onclick="toggleChip(this)">Weekly</div>
+        <div class="chip" onclick="toggleChip(this)">When inspired</div>
+        <div class="chip" onclick="toggleChip(this)">Just getting started</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(5)">← Back</button>
+      <button class="btn-next" onclick="nextStep(5)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step-card" id="step-6">
+    <span class="step-eyebrow">Section 06 — Goals</span>
+    <h2 class="step-title">What are you building right now?</h2>
+    <p class="step-desc">AI is sharpest when it knows your current focus — not just your big vision, but what you need this month.</p>
+    <div class="field-group">
+      <label>Your top goal this month</label>
+      <input type="text" id="f-goal-now" placeholder="e.g. Launch The Chi Code, build my email list to 500, land my first consulting client"/>
+    </div>
+    <div class="field-group">
+      <label>Your 1-year vision</label>
+      <input type="text" id="f-goal-year" placeholder="e.g. Build Free Chi University into a recognized AI education brand for creatives"/>
+    </div>
+    <div class="field-group">
+      <label>Your biggest challenge right now</label>
+      <input type="text" id="f-challenge" placeholder="e.g. Consistent content creation, converting followers to buyers, building my tech systems"/>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(6)">← Back</button>
+      <button class="btn-next" onclick="nextStep(6)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step-card" id="step-7">
+    <span class="step-eyebrow">Section 07 — Your Voice</span>
+    <h2 class="step-title">Let AI hear you speak.</h2>
+    <p class="step-desc">This is the most powerful section. Paste something you've already written so AI can learn your natural rhythm and mirror it.</p>
+    <div class="field-group">
+      <label>Paste a writing sample (caption, bio, post, email — anything you wrote)</label>
+      <textarea id="f-sample" rows="5" placeholder="The more natural the better. AI will study your word choices, rhythm, and energy from this sample and write in your voice going forward."></textarea>
+    </div>
+    <div class="field-group">
+      <label>What makes your perspective unique?</label>
+      <textarea id="f-unique" rows="3" placeholder="e.g. I've been in hip hop culture since the 90s. I see AI as the new instrument — and I teach creators how to play it without losing their soul."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(7)">← Back</button>
+      <button class="btn-next" onclick="nextStep(7)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step-card" id="step-8">
+    <span class="step-eyebrow">Section 08 — Final Touch</span>
+    <h2 class="step-title">One last thing.</h2>
+    <p class="step-desc">Is there anything AI should always know about you — something that shapes how you show up in your work and your world?</p>
+    <div class="field-group">
+      <label>Anything else AI should always know about you</label>
+      <textarea id="f-extra" rows="4" placeholder="e.g. I value authenticity over perfection. I speak to my community with love and high standards. I am building this while managing multiple projects. Faith is central to how I move..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(8)">← Back</button>
+      <button class="btn-next" onclick="generateCode()">✦ Generate My Chi Code</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- RESULT -->
+<div id="result-section">
+  <div class="container">
+    <div class="result-header">
+      <div class="gold-rule"></div>
+      <h2>Your Chi Code Is Ready.</h2>
+      <p>Use the formatted view below — or copy the text block and paste it into any AI tool.</p>
+    </div>
+
+    <div class="chi-doc" id="chi-doc-display">
+      <div class="chi-doc-title" id="r-title"></div>
+      <div class="chi-doc-sub">Personal AI Primer · Free Chi University · The Chi Code™</div>
+      <div id="r-sections"></div>
+    </div>
+
+    <p style="font-family:'Space Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; text-align:center; margin-bottom:12px;">Copy-Paste Block — Paste This Into Any AI</p>
+
+    <div class="copy-block-wrap">
+      <div class="copy-block" id="copy-block-text"></div>
+      <button class="copy-btn" onclick="copyCode()">Copy</button>
+    </div>
+
+    <p style="font-size:12px; color:var(--muted); text-align:center; margin-bottom:28px; line-height:1.8;">
+      Paste this at the top of any AI conversation — ChatGPT, Claude, Gemini — before you ask for anything.<br/>AI will instantly know who you are and create in your voice.
+    </p>
+
+    <div class="action-row">
+      <button class="btn-outline" onclick="restartQuiz()">Start Over</button>
+      <button class="btn-primary" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="fcu-footer">
+  <div class="gold-rule"></div>
+  <p><strong>Free Chi University</strong> · The Chi Code™</p>
+  <p style="margin-top:6px; font-size:11px;">Culture Queen Teaching the Next Generation</p>
+</div>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 8;
+
+  function updateProgress(step) {
+    const pct = ((step - 1) / totalSteps) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = 'Step ' + step + ' of ' + totalSteps;
+  }
+
+  function nextStep(from) {
+    document.getElementById('step-' + from).classList.remove('active');
+    currentStep = from + 1;
+    if (currentStep <= totalSteps) {
+      document.getElementById('step-' + currentStep).classList.add('active');
+      updateProgress(currentStep);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevStep(from) {
+    document.getElementById('step-' + from).classList.remove('active');
+    currentStep = from - 1;
+    document.getElementById('step-' + currentStep).classList.add('active');
+    updateProgress(currentStep);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleTone(el) {
+    const selected = document.querySelectorAll('#tone-grid .tone-chip.selected');
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+    } else if (selected.length < 5) {
+      el.classList.add('selected');
+    }
+  }
+
+  function toggleChip(el) { el.classList.toggle('selected'); }
+
+  function getSelected(containerId) {
+    return Array.from(document.querySelectorAll('#' + containerId + ' .chip.selected')).map(c => c.textContent).join(', ');
+  }
+
+  function getTones() {
+    return Array.from(document.querySelectorAll('#tone-grid .tone-chip.selected')).map(c => c.textContent).join(', ');
+  }
+
+  function v(id) { return (document.getElementById(id).value || '').trim(); }
+
+  function generateCode() {
+    const d = {
+      name: v('f-name') || 'Creative',
+      role: v('f-role'),
+      culture: v('f-culture'),
+      brand: v('f-brand'),
+      transform: v('f-transform'),
+      tones: getTones(),
+      antitone: v('f-antitone'),
+      audience: v('f-audience'),
+      painpoints: v('f-painpoints'),
+      dreams: v('f-dreams'),
+      offers: v('f-offers'),
+      prices: getSelected('price-chips'),
+      discovery: v('f-discovery'),
+      platforms: getSelected('platform-chips'),
+      frequency: getSelected('freq-chips'),
+      goalNow: v('f-goal-now'),
+      goalYear: v('f-goal-year'),
+      challenge: v('f-challenge'),
+      sample: v('f-sample'),
+      unique: v('f-unique'),
+      extra: v('f-extra')
+    };
+
+    document.querySelectorAll('.step-card').forEach(c => c.style.display = 'none');
+    document.getElementById('progressWrap').style.display = 'none';
+
+    document.getElementById('r-title').textContent = d.name + "\u2019s Chi Code";
+
+    const secs = buildSections(d);
+    document.getElementById('r-sections').innerHTML = secs.map(s =>
+      `<div class="chi-section"><div class="chi-section-label">${s.icon} ${s.label}</div><div class="chi-section-value">${s.value.replace(/\n/g,'<br/>')}</div></div>`
+    ).join('');
+
+    document.getElementById('copy-block-text').textContent = buildCopyBlock(d, secs);
+    document.getElementById('result-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildSections(d) {
+    const sections = [];
+
+    let id = [];
+    if (d.name) id.push('My name is ' + d.name + '.');
+    if (d.role) id.push('I am a ' + d.role + '.');
+    if (d.culture) id.push('Cultural background: ' + d.culture + '.');
+    if (d.brand) id.push('My brand: ' + d.brand + '.');
+    if (d.transform) id.push('What I do for people: ' + d.transform + '.');
+    if (id.length) sections.push({ icon: '🔑', label: 'Identity', value: id.join('\n') });
+
+    let voice = [];
+    if (d.tones) voice.push('Brand voice: ' + d.tones + '.');
+    if (d.antitone) voice.push('Never sound: ' + d.antitone + '.');
+    if (voice.length) sections.push({ icon: '🎙️', label: 'Brand Voice', value: voice.join('\n') });
+
+    let aud = [];
+    if (d.audience) aud.push(d.audience);
+    if (d.painpoints) aud.push('They struggle with: ' + d.painpoints + '.');
+    if (d.dreams) aud.push('They dream of: ' + d.dreams + '.');
+    if (aud.length) sections.push({ icon: '👥', label: 'My Audience', value: aud.join('\n') });
+
+    let off = [];
+    if (d.offers) off.push(d.offers);
+    if (d.prices) off.push('Price range: ' + d.prices + '.');
+    if (d.discovery) off.push('How people find me: ' + d.discovery + '.');
+    if (off.length) sections.push({ icon: '💼', label: 'What I Offer', value: off.join('\n') });
+
+    let plat = [];
+    if (d.platforms) plat.push('Active on: ' + d.platforms + '.');
+    if (d.frequency) plat.push('How often I create: ' + d.frequency + '.');
+    if (plat.length) sections.push({ icon: '📱', label: 'My Platforms', value: plat.join('\n') });
+
+    let goals = [];
+    if (d.goalNow) goals.push('Right now I am focused on: ' + d.goalNow + '.');
+    if (d.goalYear) goals.push('My 1-year vision: ' + d.goalYear + '.');
+    if (d.challenge) goals.push('My current challenge: ' + d.challenge + '.');
+    if (goals.length) sections.push({ icon: '🎯', label: 'My Goals', value: goals.join('\n') });
+
+    let vox = [];
+    if (d.unique) vox.push(d.unique);
+    if (d.extra) vox.push(d.extra);
+    if (d.sample) vox.push('\nSample of how I naturally write:\n\u201c' + d.sample + '\u201d');
+    if (vox.length) sections.push({ icon: '✍️', label: 'My Voice & Perspective', value: vox.join('\n') });
+
+    return sections;
+  }
+
+  function buildCopyBlock(d, secs) {
+    const line = '\u2500'.repeat(50);
+    let b = '=== MY CHI CODE \u2014 PERSONAL AI PRIMER ===\n';
+    b += 'Free Chi University \u00b7 The Chi Code\u2122\n' + line + '\n\n';
+    b += 'BEFORE WE BEGIN:\nPlease read my Chi Code below. Use it to inform everything you create for me in this session. Match my voice, speak to my audience, and align with my current goals.\n\n' + line + '\n\n';
+    secs.forEach(s => {
+      b += s.label.toUpperCase() + '\n' + s.value + '\n\n' + line + '\n\n';
+    });
+    b += 'Now you know who I am. Let\u2019s create something the culture needs.\n';
+    b += '='.repeat(50);
+    return b;
+  }
+
+  function copyCode() {
+    const text = document.getElementById('copy-block-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = 'Copied \u2713';
+      setTimeout(() => btn.textContent = 'Copy', 2200);
+    });
+  }
+
+  function restartQuiz() {
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('progressWrap').style.display = 'block';
+    document.querySelectorAll('.step-card').forEach(c => { c.style.display = ''; c.classList.remove('active'); });
+    document.getElementById('step-1').classList.add('active');
+    currentStep = 1;
+    updateProgress(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  updateProgress(1);
+</script>
+</body>
+</html>
